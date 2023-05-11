@@ -20,7 +20,7 @@ screen.blit(bg, (0,0))
 
 
 #加载一张图片（455*191)
-image_surface = pg.image.load("C:/Users/User/Desktop/vscode/123.jpg").convert()
+image_surface = pg.image.load("./image/background.jpg").convert()
 image_new = pg.transform.scale(image_surface,(500,300))
 # 查看新生成的图片的对象类型
 #print(type(image_new))
