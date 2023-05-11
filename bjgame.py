@@ -10,6 +10,8 @@ cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10] * 4
 # remove the card when it is drawn
 def deal_card():
     card = random.choice(cards)
+    while card > 4:
+        card = random.choice(cards)
     cards.remove(card)
     return card
 
@@ -46,22 +48,54 @@ def play_blackjack():
     print(f"玩家的牌：{user_cards}")
     print(f"莊家的明牌：{dealer_cards[1]}")
 
+    # print(f"是否投降? 輸入y投降、輸入n結束")
+
     # user's card
+    FiveStages = False
+    times_player_asked = 0
     ask_for_card = ""
     while ask_for_card != "n":
-        ask_for_card = input("輸入y加牌、輸入n看結果:")
-
-        if ask_for_card == "y":
-            user_cards.append(deal_card())
-            user_points = calculate_points(user_cards)
-            if user_points > 21:
+        if len(user_cards) == 5:
+            if user_points <= 21:
+                FiveStages = True
+                user_points = 21
                 ask_for_card = "n"
             else:
-                print(f"玩家的牌：{user_cards}")
-        elif ask_for_card == "n":
-            user_points = calculate_points(user_cards)
+                ask_for_card = "n"        
+        elif times_player_asked != 0:
+            times_player_asked += 1
+            ask_for_card = input("輸入y加牌、輸入n看結果:")
+
+            if ask_for_card == "y":
+                user_cards.append(deal_card())
+                user_points = calculate_points(user_cards)
+                if user_points > 21:
+                    ask_for_card = "n"
+                else:
+                    print(f"玩家的牌：{user_cards}")
+            elif ask_for_card == "n":
+                user_points = calculate_points(user_cards)
+            else:
+                print("請重新輸入!")
         else:
-            print("請重新輸入!")
+            times_player_asked += 1
+            ask_for_card = input("輸入s投降、輸入y加牌、輸入n看結果:")
+
+            if ask_for_card == "y":
+                user_cards.append(deal_card())
+                user_points = calculate_points(user_cards)
+                if user_points > 21:
+                    ask_for_card = "n"
+                else:
+                    print(f"玩家的牌：{user_cards}")
+            # 投降
+            elif ask_for_card == "s":
+                print("你已投降,返回一半籌碼")
+                return
+            elif ask_for_card == "n":
+                user_points = calculate_points(user_cards)
+            else:
+                print("請重新輸入!")
 
     # dealer's cards
     dealer_points = calculate_points(dealer_cards)
@@ -70,8 +104,12 @@ def play_blackjack():
         dealer_points = calculate_points(dealer_cards)
 
     # show cards
-    print(f"玩家的牌：{user_cards}，共{user_points}點")
-    print(f"莊家的牌：{dealer_cards}，共{dealer_points}點")
+    if not FiveStages:
+        print(f"玩家的牌：{user_cards}，共{user_points}點")
+        print(f"莊家的牌：{dealer_cards}，共{dealer_points}點")
+    else:
+        print("玩家成功過五關")
+        print(f"莊家的牌：{dealer_cards}，共{dealer_points}點")
 
     # decide who wins
     if user_points > 21:
