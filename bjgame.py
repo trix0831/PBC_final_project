@@ -61,7 +61,7 @@ def play_blackjack():
         elif ask_for_card == "n":
             user_points = calculate_points(user_cards)
         else:
-            print("請重新輸入!輸入y加牌、輸入n看結果:")
+            print("請重新輸入!")
 
     # dealer's cards
     dealer_points = calculate_points(dealer_cards)
