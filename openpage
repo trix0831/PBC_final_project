@@ -11,7 +11,7 @@ canvas_size = (width, height)
 canvas = pygame.display.set_mode(canvas_size)
 
 # 載入照片
-image_path = r'C:\Users\timmy\OneDrive\桌面\logo pic.png'
+image_path = r'C:\PBC_final_project\image\logo pic.png'
 image = pygame.image.load(image_path)
 
 # 調整圖案大小以符合畫布
