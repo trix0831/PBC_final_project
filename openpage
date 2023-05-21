@@ -1,0 +1,40 @@
+import pygame
+
+# 初始化pygame
+pygame.init()
+
+# 設定畫布大小
+width, height = 700, 700
+canvas_size = (width, height)
+
+# 建立畫布
+canvas = pygame.display.set_mode(canvas_size)
+
+# 載入照片
+image_path = r'C:\PBC_final_project\image\logo pic.png'
+image = pygame.image.load(image_path)
+
+# 調整圖案大小以符合畫布
+image = pygame.transform.scale(image, (600, 400))  # 調整為適當的大小
+
+# 取得圖案在畫布中的位置
+image_x = (width - image.get_width()) // 2
+image_y = (height - image.get_height()) // 4  # 將圖案置於畫布中上方
+
+# 將圖案繪製在畫布上
+canvas.fill((0, 0, 0))  # 填滿黑色背景
+canvas.blit(image, (image_x, image_y))  # 繪製圖案
+
+# 更新畫面顯示
+pygame.display.flip()
+
+# 主迴圈
+running = True
+while running:
+    # 檢查事件
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+# 關閉pygame
+pygame.quit()
