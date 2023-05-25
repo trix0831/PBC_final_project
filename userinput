@@ -8,51 +8,63 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # 設定字體和文字
-font = pygame.font.SysFont("Arial", 30)
-text = font.render("Please enter username(only english and numbers):", True, (255, 255, 255))
+font = pygame.font.SysFont("Times new roman", 30)
+text = font.render("Please enter username (only English and numbers):", True, (255, 255, 255))
 
 # 取得文字的寬度和高度
-text_width, text_height = font.size("please enter username:")
-
-
+text_width, text_height = font.size("Please enter username (only English and numbers):")
 
 # 設定輸入框
-input_box = pygame.Rect(250, 250, 300, 50)
-
-
-
+input_box = pygame.Rect(250, 300, 300, 50)
 input_text = ""
+max_length = 10
 
 # 設定顏色
-bg_color = (0, 100, 0)
+bg_color = (0, 0, 0)
+active = True
 
 # 遊戲迴圈
-while True:
+while active:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
         elif event.type == pygame.KEYDOWN:
-            if event.unicode.isalnum():
+            if event.unicode.isprintable() and len(input_text) < max_length:
                 input_text += event.unicode
             elif event.key == pygame.K_BACKSPACE:
                 input_text = input_text[:-1]
+            elif event.key == pygame.K_RETURN:
+                # 按下 Enter 鍵後離開輸入狀態
+                # input_box.active = False
+                active = False
+                
+                
 
     screen.fill(bg_color)
-    
+
+
     # 畫出文字和輸入框
     pygame.draw.rect(screen, (255, 255, 255), input_box)
     screen.blit(text, ((screen_width - text_width) // 2, input_box.y - text_height - 20))
     pygame.draw.rect(screen, (255, 255, 255), input_box, 2)
-    
+
     # 畫出輸入的文字
     text_surface = font.render(input_text, True, (0, 0, 0))
     screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
 
-
-
+    # 檢查是否超過字數限制
+    if len(input_text) >= max_length:
+        text_surface = font.render("Max length reached", True, (255, 0, 0))
+        screen.blit(text_surface, (290  , input_box.y + 70))
 
     pygame.display.update()
+    if not active:
+        print(input_text)
+        pygame.quit()
+        exit()
+
+
 
 
 
