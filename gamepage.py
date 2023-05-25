@@ -1,9 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 
-# 背景圖片路徑
-background_image_path = r"./image/game_background.png"
-
 
 def bet():
     # 在這裡寫下注的邏輯
@@ -36,14 +33,6 @@ def on_button_release(button):
 # 創建主窗口
 window = tk.Tk()
 window.title("Blackjack")
-
-# 設定背景圖片
-background_image = Image.open(background_image_path)
-background_photo = ImageTk.PhotoImage(background_image)
-canvas = tk.Canvas(window, width=background_image.width,
-                   height=background_image.height)
-canvas.create_image(0, 0, anchor=tk.NW, image=background_photo)
-canvas.pack()
 
 # 載入圖片並創建下注按鈕
 bet_image = Image.open("./image/bet.png")
@@ -102,7 +91,6 @@ y = int((screen_height / 2) - (300 / 2))
 
 # 設置窗口位置
 window.geometry(f"400x300+{x}+{y}")
-
 
 # 開始運行主迴圈
 window.mainloop()
