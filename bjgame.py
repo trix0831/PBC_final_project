@@ -1,11 +1,20 @@
 import random
 import time
+import player
+
+# 玩家總數,最多好像12位可以玩而已
+player_num = int(input())
+
+chips_list = []
+for i in range(player):
+    chips_list.append(1000)
 
 class Player:
-    def __init__(self, cards, points_sum, status):
+    def __init__(self, cards, points_sum, status, chips):
         self.cards = cards
         self.points_sum = points_sum
         self.status = status
+        self.chips = chips
 
 cards = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] * 4
 translate = {"J": 10, "Q": 10, "K": 10, "Ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
@@ -36,14 +45,11 @@ def calculate_points(cards):
 
     return points_sum
 
-# 玩家總數,最多好像12位可以玩而已
-player = int(input())
-
 detail = []
 def game_start():
     # 發玩家、莊家的牌
     for i in range(player + 1):
-        playing = Player([], 0, 0) 
+        playing = Player([], 0, 0, 0) 
         playing.cards.append(deal_card())
         playing.cards.append(deal_card())
         playing.points_sum = calculate_points(playing.cards)
@@ -51,11 +57,29 @@ def game_start():
 
 
     # 如何對每個用戶端印出:您是玩家n or 改為印出'您' 而非 '玩家n' 之類的?
-    for i in range(player):
+    for i in range(player_num):
         print("玩家" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
         time.sleep(0.2)
     print(f"莊家的明牌：{detail[-1].cards[0]}")
     return detail
+
+def Bet(detail, chips_list):
+    for i in range(player):
+        finish = False
+        bet = ''
+        while not finish:
+            try:
+                bet = int(input("輸入您本輪欲下注的金額:"))
+                if bet < 150:
+                    print("下注金額不足,請重新下注")
+                elif bet > chips_list[i]:
+                    print("下注金額超過您擁有的籌碼,請重新下注")
+                else:
+                    finish = True
+                    detail[i].chips = bet
+                    chips_list[i] -= bet
+            except:
+                print("投注失敗,請重新下注")
 
 def Surrender(k, detail):
     surrender = ""
@@ -119,14 +143,16 @@ time.sleep(1)
 
 detail = game_start()
 
+Bet(detail, chips_list)
+print(chips_list)
 
-for g in range(player):
+for g in range(player_num):
     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 print("進入投降階段")
 
 
 # 逐一詢問玩家是否投降
-for k in range(player):
+for k in range(player_num):
     print("玩家" + str(k + 1) + "的回合")
     # 希望只出現在該玩家的畫面
 
@@ -146,7 +172,7 @@ time.sleep(1)
 # for g in range(player):
 #     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 
-for i in range(player):
+for i in range(player_num):
     if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
         pass
     else:
@@ -178,35 +204,43 @@ print("計算結果中,結果即將揭曉")
 
 time.sleep(1.8)
 
-for j in range(player):
+for j in range(player_num):
     time.sleep(0.2)
     if detail[j].status == "爆":
         print("玩家" + str(j + 1) + "點數爆炸，沒收籌碼")
     elif detail[j].status == "過五關":
         if detail[-1].points_sum == 21:
             print("玩家" + str(j + 1) + "過五關,但莊家獲得21點,平手,返回全部籌碼")
+            chips_list[j] += detail[j].chips
         else:
-            print("玩家" + str(j + 1) + "過五關,返回3倍籌碼")
+            print("玩家" + str(j + 1) + "過五關,返回4倍籌碼")
+            chips_list[j] += 4 * detail[j].chips
     elif detail[j].status == "BLACK JACK":
         if detail[-1].status == "BLACK JACK":
             print("玩家" + str(j + 1) + "與莊家同時獲得BLACK JACK,平手,返回全部籌碼")
+            chips_list[j] += detail[j].chips
         else:
-            print("玩家" + str(j + 1) + "獲得BLACK JACK,返回2.5倍籌碼")
+            print("玩家" + str(j + 1) + "獲得BLACK JACK,返回3倍籌碼")
+            chips_list[j] += 3 * detail[j].chips
     elif detail[j].status == "已投降":
         print("玩家" + str(j + 1) + "已投降")
     else:
         if detail[-1].status == "BLACK JACK":
             print("莊家獲得BLACK JACK,沒收籌碼")
         elif detail[-1].points_sum > 21:
-            print("莊家點數爆炸，返回 玩家" + str(j + 1) + " 的籌碼")
+            print("莊家點數爆炸，返回玩家" + str(j + 1) + " 的籌碼")
+            chips_list[j] += detail[j].chips
         else:
             if detail[j].points_sum > detail[-1].points_sum:
                 print("玩家" + str(j + 1) + "的點數比莊家大,返回2倍籌碼")
+                chips_list[j] += 2 * detail[j].chips
             elif detail[j].points_sum == detail[-1].points_sum:
                 print("玩家" + str(j + 1) + "與莊家平手,返回籌碼")
+                chips_list[j] += detail[j].chips
             else:
                 print("玩家" + str(j + 1) + "的點數比莊家小,沒收籌碼")
 
 
 # print(cards)
 
+print(chips_list)
