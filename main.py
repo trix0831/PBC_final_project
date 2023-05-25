@@ -1,14 +1,17 @@
     # 匯入pygame
 import pygame as pg
-import jjingg as jg
+import button as BT
+import pve
+import pvp
 
 # pygame初始化
 pg.init()
 
-scale = 2
+scale = 1.5
 
 # 設定視窗
-width, height =  559, 238                                          # 遊戲畫面寬和高
+width, height =  590, 410   
+button_width, button_height = 200, 100# 遊戲畫面寬和高
 screen = pg.display.set_mode((width*scale, height*scale))                      # 依設定顯示視窗
 pg.display.set_caption("Welcome to the Black Jack game")           # 設定程式標題
 
@@ -17,36 +20,42 @@ bg = pg.Surface(screen.get_size())
 bg = bg.convert()
 
 
-image_surface = pg.image.load("./image/background_new.jpg").convert()
-image_new = pg.transform.scale(jg.jjingg1,(width, height))
-# 对新生成的图像进行旋转至0度
-# 使用rotozoom() 旋转 0 度，将图像缩小2.5倍
+image_surface = pg.image.load("./image/openpage.PNG").convert()
+image_new = pg.transform.scale(image_surface,(width, height))
 image_1 = pg.transform.rotozoom(image_new,0,scale)
-
-# 将最后生成的image_2添加到显示屏幕上
 screen.blit(image_1,(0,0))
-# pg.display.update()
 
+buttons = []
 
-# 宣告 font 文字物件
-head_font = pg.font.SysFont(None, 60)
-# 渲染方法會回傳 surface 物件
-text_surface = head_font.render('Welcome to the Black Jack game !', True, (0, 255, 255))
-# blit 用來把其他元素渲染到另外一個 surface 上，這邊是 window 視窗
-screen.blit(text_surface, (10, 10))
+PVE_button = BT.button(button_width, button_height, (400, 350), ".\image\pve_black.jpg", ".\image\pve_black.jpg", pve.pve)
+buttons.append(PVE_button)
 
-# 更新畫面，等所有操作完成後一次更新（若沒更新，則元素不會出現）
-pg.display.update()
+PVP_button = BT.button(button_width, button_height, (640, 350), ".\image\pvp_black.jpg", ".\image\pvp_black.jpg", pvp.pvp)
+buttons.append(PVP_button)
 
-
+print(buttons)
 
 running = True
+
 while running:
+    mouse_x, mouse_y = pg.mouse.get_pos()
+        
+    for button in buttons:
+        if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+            screen.blit(button.button_image[0], button.pos)
+            
+        else:
+            screen.blit(button.button_image[0], button.pos)
+    
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            for button in buttons:
+                if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                    button.func()
+                
+        
+    pg.display.update()
             
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_SPACE:
-                running = False
 pg.quit()   
