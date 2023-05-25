@@ -35,7 +35,7 @@ window = tk.Tk()
 window.title("Blackjack")
 
 # 載入圖片並創建下注按鈕
-bet_image = Image.open(r"C:\python\bet.png")
+bet_image = Image.open("./image/bet.png")
 bet_image = bet_image.resize((150, 50))  # 調整按鈕大小
 bet_photo = ImageTk.PhotoImage(bet_image)
 bet_button = tk.Button(window, image=bet_photo, command=bet, relief=tk.RAISED)
@@ -45,7 +45,7 @@ bet_button.bind("<ButtonRelease-1>",
                 lambda event: on_button_release(bet_button))
 
 # 載入圖片並創建要牌按鈕
-hit_image = Image.open(r"C:\python\hit.png")
+hit_image = Image.open("./image/hit.png")
 hit_image = hit_image.resize((150, 50))  # 調整按鈕大小
 hit_photo = ImageTk.PhotoImage(hit_image)
 hit_button = tk.Button(window, image=hit_photo, command=hit, relief=tk.RAISED)
@@ -55,7 +55,7 @@ hit_button.bind("<ButtonRelease-1>",
                 lambda event: on_button_release(hit_button))
 
 # 載入圖片並創建停牌按鈕
-stand_image = Image.open(r"C:\python\stand.png")
+stand_image = Image.open("./image/stand.png")
 stand_image = stand_image.resize((150, 50))  # 調整按鈕大小
 stand_photo = ImageTk.PhotoImage(stand_image)
 stand_button = tk.Button(window, image=stand_photo,
@@ -67,7 +67,7 @@ stand_button.bind("<ButtonRelease-1>",
                   lambda event: on_button_release(stand_button))
 
 # 載入圖片並創建投降按鈕
-surrender_image = Image.open(r"C:\python\surrender.png")
+surrender_image = Image.open("./image/surrender.png")
 surrender_image = surrender_image.resize((150, 50))  # 調整按鈕大小
 surrender_photo = ImageTk.PhotoImage(surrender_image)
 surrender_button = tk.Button(
