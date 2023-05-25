@@ -38,13 +38,14 @@ window = tk.Tk()
 window.title("Blackjack")
 
 
+# 創建Canvas元件
+canvas = tk.Canvas(window, width=800, height=600)
+canvas.pack()
+
 # 設定背景圖片
 background_image = Image.open(background_image_path)
 background_photo = ImageTk.PhotoImage(background_image)
-canvas = tk.Canvas(window, width=background_image.width,
-                   height=background_image.height)
 canvas.create_image(0, 0, anchor=tk.NW, image=background_photo)
-canvas.pack()
 
 # 載入圖片並創建下注按鈕
 bet_image = Image.open("./image/bet.png")
