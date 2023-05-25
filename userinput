@@ -7,6 +7,9 @@ screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+game_title = "輸入使用者名稱"  # 替換成您自己的遊戲標題
+pygame.display.set_caption(game_title)
+
 # 設定字體和文字
 font = pygame.font.SysFont("Times new roman", 30)
 text = font.render("Please enter username (only English and numbers):", True, (255, 255, 255))
@@ -20,10 +23,26 @@ input_text = ""
 max_length = 10
 
 # 設定顏色
-bg_color = (0, 0, 0)
+
 active = True
 
-# 遊戲迴圈
+ # 載入照片
+image_path = './image/newlogo.png'
+image = pygame.image.load(image_path)
+
+# 調整圖案大小以符合畫布
+image = pygame.transform.scale(image, (280, 170))  # 調整為適當的大小
+
+# 取得圖案在畫布中的位置
+image_x = 260
+image_y = 405
+
+# 將圖案繪製在畫布上
+screen.fill((0, 0, 0))  # 填滿黑色背景
+screen.blit(image, (image_x, image_y))  # 繪製圖案
+pygame.display.flip()
+
+
 while active:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -39,10 +58,10 @@ while active:
                 # input_box.active = False
                 active = False
                 
-                
+    screen.fill((0, 0, 0))
 
-    screen.fill(bg_color)
-
+    # 繪製圖案
+    screen.blit(image, (image_x, image_y))
 
     # 畫出文字和輸入框
     pygame.draw.rect(screen, (255, 255, 255), input_box)
@@ -59,10 +78,12 @@ while active:
         screen.blit(text_surface, (290  , input_box.y + 70))
 
     pygame.display.update()
+
     if not active:
         print(input_text)
         pygame.quit()
         exit()
+
 
 
 
