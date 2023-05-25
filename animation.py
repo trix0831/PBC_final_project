@@ -61,7 +61,8 @@ class Game:
         self.deck = deck
         self.player_hand = []
         self.dealer_hand = []
-
+        # define player_frame as an instance variable
+        self.player_frame = tk.Frame(window)
         # 洗牌
         self.deck.shuffle()
 
@@ -114,9 +115,8 @@ class Game:
     def hit(self):
         card = self.deck.deal_card()
         self.player_hand.append(card)
-
         label_image = ImageTk.PhotoImage(card.image)
-        label = tk.Label(player_frame, image=label_image)
+        label = tk.Label(self.player_frame, image=label_image)
         label.image = label_image
         label.pack(side="left")
         self.player_card_labels.append(label)
