@@ -29,7 +29,7 @@ image_x = 50
 image_y = 120
 
 # 將圖案繪製在畫布上
-canvas.fill((0, 0, 0))  # 填滿綠色背景
+canvas.fill((0, 0, 0))  # 填滿黑色背景
 canvas.blit(image, (image_x, image_y))  # 繪製圖案
 pygame.display.flip()
 
