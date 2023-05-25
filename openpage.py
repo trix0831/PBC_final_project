@@ -18,7 +18,7 @@ text = font.render("Welcome to 刺激二十一點", True,  (255, 255, 255), (0, 
 canvas.blit(text, (60,60))
 
 # 載入照片
-image_path = r'C:\PBC_final_project\image\logo pic.png'
+image_path = r'C:\PBC_final_project\image\openpage.PNG'
 image = pygame.image.load(image_path)
 
 # 調整圖案大小以符合畫布
@@ -29,7 +29,7 @@ image_x = 50
 image_y = 120
 
 # 將圖案繪製在畫布上
-canvas.fill((0, 100, 0))  # 填滿綠色背景
+canvas.fill((0, 0, 0))  # 填滿綠色背景
 canvas.blit(image, (image_x, image_y))  # 繪製圖案
 pygame.display.flip()
 
