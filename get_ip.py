@@ -12,10 +12,8 @@ def get_wifi_ipv4_address():
         for line in lines:
             if 'Wi-Fi' in line:
                 
-                next_line = lines[lines.index(line) + 1]
-                print(next_line)
+                next_line = lines[lines.index(line) + 4]
                 if 'IPv4 Address' in next_line:
-                    print("here")
                     ip_start_index = next_line.find(':') + 2  # Find the starting index of IP address
                     ip_address = next_line[ip_start_index:]
                     
@@ -23,10 +21,9 @@ def get_wifi_ipv4_address():
     except subprocess.CalledProcessError:
         return None
 
-# Get the IPv4 address of the Wi-Fi adapter
-wifi_ipv4_address = get_wifi_ipv4_address()
 
-if wifi_ipv4_address:
-    print("Wi-Fi IPv4 address:", wifi_ipv4_address)
-else:
-    print("Wi-Fi IPv4 address not found.")
+if __name__ == '__main__':
+    # Get the IPv4 address of the Wi-Fi adapter
+    wifi_ipv4_address = get_wifi_ipv4_address()
+
+    print(wifi_ipv4_address)
