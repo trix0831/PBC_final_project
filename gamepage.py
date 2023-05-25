@@ -2,7 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 # 背景圖片路徑
-background_image_path = r"./image/game_background.png"
+background_image_path = "./image/game_background.png"
 
 
 def bet():
@@ -36,6 +36,7 @@ def on_button_release(button):
 # 創建主窗口
 window = tk.Tk()
 window.title("Blackjack")
+
 
 # 設定背景圖片
 background_image = Image.open(background_image_path)
