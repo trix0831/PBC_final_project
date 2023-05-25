@@ -3,7 +3,7 @@ import time
 import player
 
 # 玩家總數,最多好像12位可以玩而已
-player = int(input())
+player_num = int(input())
 
 chips_list = []
 for i in range(player):
