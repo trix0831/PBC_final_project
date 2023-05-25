@@ -1,11 +1,7 @@
 import random
 import time
+import player
 
-class Player:
-    def __init__(self, cards, points_sum, status):
-        self.cards = cards
-        self.points_sum = points_sum
-        self.status = status
 
 cards = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] * 4
 translate = {"J": 10, "Q": 10, "K": 10, "Ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
@@ -37,13 +33,13 @@ def calculate_points(cards):
     return points_sum
 
 # 玩家總數,最多好像12位可以玩而已
-player = int(input())
+player_num = int(input())
 
 detail = []
 def game_start():
     # 發玩家、莊家的牌
-    for i in range(player + 1):
-        playing = Player([], 0, 0) 
+    for i in range(player_num + 1):
+        playing = player.Player([], 0, 0) 
         playing.cards.append(deal_card())
         playing.cards.append(deal_card())
         playing.points_sum = calculate_points(playing.cards)
@@ -51,7 +47,7 @@ def game_start():
 
 
     # 如何對每個用戶端印出:您是玩家n or 改為印出'您' 而非 '玩家n' 之類的?
-    for i in range(player):
+    for i in range(player_num):
         print("玩家" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
         time.sleep(0.2)
     print(f"莊家的明牌：{detail[-1].cards[0]}")
@@ -120,13 +116,13 @@ time.sleep(1)
 detail = game_start()
 
 
-for g in range(player):
+for g in range(player_num):
     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 print("進入投降階段")
 
 
 # 逐一詢問玩家是否投降
-for k in range(player):
+for k in range(player_num):
     print("玩家" + str(k + 1) + "的回合")
     # 希望只出現在該玩家的畫面
 
@@ -146,7 +142,7 @@ time.sleep(1)
 # for g in range(player):
 #     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 
-for i in range(player):
+for i in range(player_num):
     if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
         pass
     else:
@@ -178,7 +174,7 @@ print("計算結果中,結果即將揭曉")
 
 time.sleep(1.8)
 
-for j in range(player):
+for j in range(player_num):
     time.sleep(0.2)
     if detail[j].status == "爆":
         print("玩家" + str(j + 1) + "點數爆炸，沒收籌碼")
