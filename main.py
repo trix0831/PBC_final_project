@@ -35,6 +35,9 @@ buttons.append(PVP_button)
 
 print(buttons)
 
+for button in buttons:
+    screen.blit(button.button_image[0], button.pos)
+
 running = True
 
 while running:
@@ -50,10 +53,15 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+            
         elif event.type == pg.MOUSEBUTTONDOWN:
             for button in buttons:
                 if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                    screen.blit(button.button_image[1], button.pos)
                     button.func()
+                    
+    for button in buttons:
+        screen.blit(button.button_image[0], button.pos)
                 
         
     pg.display.update()
