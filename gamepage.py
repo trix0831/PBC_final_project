@@ -29,10 +29,10 @@ def on_button_press(button):
 def on_button_release(button):
     button.config(relief=tk.RAISED)
 
-# 創建給所有按鈕的class 屬性有圖片、螢幕上的x座標、圖片寬度、圖片寬度
+# 創建給所有按鈕的class 屬性依序為(按鈕名稱, 圖片路徑, 按鈕功能的function, x座標, y座標, 圖片寬度, 圖片高度)
 class created_button:
-    def __init__(self, name, imagename, function, location_x, location_y, width, height):
-        self.raw_image = Image.open(imagename)
+    def __init__(self, name, image_path, function, location_x, location_y, width, height):
+        self.raw_image = Image.open(image_path)
         self.image = self.raw_image.resize((width, height))  # 調整按鈕大小
         self.photo = ImageTk.PhotoImage(self.image)
         self.button = tk.Button(window, image=self.photo, command=function, relief=tk.RAISED)
@@ -41,70 +41,20 @@ class created_button:
         self.button.bind("ButtonRelease"+name, lambda event: on_button_release(self.button))
 
 
-"""
-創建主窗口
-window = tk.Tk()
-window.title("Blackjack")
-"""
-
-
-
 # 創建主窗口
 window = tk.Tk()
 window.title("Blackjack")
 
-# 載入圖片並創建下注按鈕
+# 創建下注按鈕
 bet_button = created_button("bet", "./image/bet.png", bet, 150, 150, 150, 50)
-# 載入圖片並創建要牌按鈕
+# 創建要牌按鈕
 hit_button = created_button("hit", "./image/hit.png", hit, 120, 120, 150, 50)
-# 載入圖片並創建停牌按鈕
+# 創建停牌按鈕
 stand_button = created_button("stand", "./image/stand.png", stand, 10, 20, 150, 50)
-# 載入圖片並創建投降按鈕
+# 創建投降按鈕
 surrender_button = created_button("surrender", "./image/surrender.png", surrender, 190, 270, 150, 50)
 
-"""
-bet_image = Image.open("./image/bet.png")
-bet_image = bet_image.resize((150, 50))  # 調整按鈕大小
-bet_photo = ImageTk.PhotoImage(bet_image)
-bet_button = tk.Button(window, image=bet_photo, command=bet, relief=tk.RAISED)
-bet_button.pack(pady=10)
-bet_button.bind("<ButtonPress-1>", lambda event: on_button_press(bet_button))
-bet_button.bind("<ButtonRelease-1>",
-                lambda event: on_button_release(bet_button))
 
-hit_image = Image.open("./image/hit.png")
-hit_image = hit_image.resize((150, 50))  # 調整按鈕大小
-hit_photo = ImageTk.PhotoImage(hit_image)
-hit_button = tk.Button(window, image=hit_photo, command=hit, relief=tk.RAISED)
-hit_button.pack(pady=10)
-hit_button.bind("<ButtonPress-1>", lambda event: on_button_press(hit_button))
-hit_button.bind("<ButtonRelease-1>",
-                lambda event: on_button_release(hit_button))
-
-# 載入圖片並創建停牌按鈕
-stand_image = Image.open("./image/stand.png")
-stand_image = stand_image.resize((150, 50))  # 調整按鈕大小
-stand_photo = ImageTk.PhotoImage(stand_image)
-stand_button = tk.Button(window, image=stand_photo,
-                         command=stand, relief=tk.RAISED)
-stand_button.pack(side=tk.BOTTOM, pady=10)  # 將按鈕放置在底部
-stand_button.bind("<ButtonPress-1>",
-                  lambda event: on_button_press(stand_button))
-stand_button.bind("<ButtonRelease-1>",
-                  lambda event: on_button_release(stand_button))
-
-# 載入圖片並創建投降按鈕
-surrender_image = Image.open("./image/surrender.png")
-surrender_image = surrender_image.resize((150, 50))  # 調整按鈕大小
-surrender_photo = ImageTk.PhotoImage(surrender_image)
-surrender_button = tk.Button(window, image=surrender_photo, command=surrender, relief=tk.RAISED)
-surrender_button.pack(side=tk.BOTTOM, pady=10)  # 將按鈕放置在底部
-surrender_button.bind(
-    "<ButtonPress-1>", lambda event: on_button_press(surrender_button))
-surrender_button.bind("<ButtonRelease-1>",
-                      lambda event: on_button_release(surrender_button))
-"""
-                      
 # 調整窗口大小
 window.geometry("400x300")
 
