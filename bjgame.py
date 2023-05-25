@@ -1,5 +1,6 @@
 import random
 import time
+import player
 
 # 玩家總數,最多好像12位可以玩而已
 player = int(input())
@@ -56,7 +57,7 @@ def game_start():
 
 
     # 如何對每個用戶端印出:您是玩家n or 改為印出'您' 而非 '玩家n' 之類的?
-    for i in range(player):
+    for i in range(player_num):
         print("玩家" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
         time.sleep(0.2)
     print(f"莊家的明牌：{detail[-1].cards[0]}")
@@ -145,13 +146,13 @@ detail = game_start()
 Bet(detail, chips_list)
 print(chips_list)
 
-for g in range(player):
+for g in range(player_num):
     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 print("進入投降階段")
 
 
 # 逐一詢問玩家是否投降
-for k in range(player):
+for k in range(player_num):
     print("玩家" + str(k + 1) + "的回合")
     # 希望只出現在該玩家的畫面
 
@@ -171,7 +172,7 @@ time.sleep(1)
 # for g in range(player):
 #     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 
-for i in range(player):
+for i in range(player_num):
     if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
         pass
     else:
@@ -203,7 +204,7 @@ print("計算結果中,結果即將揭曉")
 
 time.sleep(1.8)
 
-for j in range(player):
+for j in range(player_num):
     time.sleep(0.2)
     if detail[j].status == "爆":
         print("玩家" + str(j + 1) + "點數爆炸，沒收籌碼")
