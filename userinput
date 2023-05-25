@@ -23,6 +23,22 @@ max_length = 10
 bg_color = (0, 0, 0)
 active = True
 
+
+# 載入照片
+image_path = r'C:\PBC_final_project\image\newlogo.png'
+image = pygame.image.load(image_path)
+
+# 調整圖案大小以符合畫布
+image = pygame.transform.scale(image, (280, 150))  # 調整為適當的大小
+
+# 取得圖案在畫布中的位置
+image_x = 200
+image_y = 75
+
+# 將圖案繪製在畫布上
+screen.blit(image, (image_x, image_y))  # 繪製圖案
+pygame.display.flip()
+
 # 遊戲迴圈
 while active:
     for event in pygame.event.get():
