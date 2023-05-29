@@ -266,5 +266,8 @@ def pve(chips = 1000):
             pve(chips)
     
 
+
 if __name__ == '__main__' and reset != 'gg':
     pve(chips)
+
+
