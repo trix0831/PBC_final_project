@@ -72,6 +72,8 @@ def card_values(hand):
 
 
 class Game:
+    dealer_1st_image = None  # 新增類別層級的變數
+
     def __init__(self, deck):
         self.deck = deck
         self.player_hand = []
@@ -110,6 +112,7 @@ class Game:
         for card in self.dealer_hand:
             if len(self.dealer_card_labels) == 0:
                 label_image = ImageTk.PhotoImage(back_image)
+                self.dealer_1st_image = ImageTk.PhotoImage(card.image)
             else:
                 label_image = ImageTk.PhotoImage(card.image)
             label = tk.Label(self.dealer_frame, image=label_image)
@@ -135,15 +138,16 @@ class Game:
         self.restart_button = tk.Button(
             button_frame, text="Restart", command=self.restart)
         self.restart_button.pack(side="left")
+        self.restart_button.config(state="disabled")  # 禁用restart按鈕
 
     def restart(self):
-        # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
+    # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
         self.deck = Deck()
         self.player_hand = []
         self.dealer_hand = []
         self.deck.shuffle()
 
-        # 清空牌區的內容
+    # 清空牌區的內容
         for label in self.player_card_labels:
             label.destroy()
         self.player_card_labels.clear()
@@ -151,6 +155,9 @@ class Game:
         for label in self.dealer_card_labels:
             label.destroy()
         self.dealer_card_labels.clear()
+
+        # 清空結果顯示區
+        self.clear_result_area()
 
         # 發牌
         self.player_hand.append(self.deck.deal_card())
@@ -176,19 +183,18 @@ class Game:
             label.pack(side="left")
             self.dealer_card_labels.append(label)
 
-        # 清空結果顯示區
-        self.clear_result_area()
-
         # 啟用按鈕
         self.hit_button.config(state="normal")
         self.stand_button.config(state="normal")
         self.surrender_button.config(state="normal")
+        self.restart_button.config(state="disabled")  # 禁用restart按鈕
 
     def clear_result_area(self):
         # 清空結果顯示區
         for child in window.winfo_children():
             if child.winfo_class() == "Label" and child.winfo_parent() == window:
-                child.pack_forget()
+                child.destroy()
+
 
     def hit(self):
         if sum(card_values(self.player_hand)) < 21:
@@ -201,6 +207,9 @@ class Game:
             label.pack(side="left")
             self.player_card_labels.append(label)
         if sum(card_values(self.player_hand)) >= 21:
+            # 轉換莊家第一張牌為正面
+            self.dealer_card_labels[0].configure(
+                image=self.dealer_1st_image)  # 使用dealer_1st_image
             result_text = "Player busts! Dealer wins!"
             # 顯示結果
             result_label = tk.Label(window, text=result_text)
@@ -209,8 +218,12 @@ class Game:
             self.hit_button.config(state="disabled")  # 禁用Hit按鈕
             self.stand_button.config(state="disabled")  # 禁用Stand按鈕
             self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+            self.restart_button.config(state="normal")  # 啟用restart按鈕
 
     def stand(self):
+        # 轉換莊家第一張牌為正面
+        self.dealer_card_labels[0].configure(
+            image=self.dealer_1st_image)  # 使用dealer_1st_image
         # 玩家停牌，庄家開始抽牌
         while sum(card_values(self.dealer_hand)) < 17:
             card = self.deck.deal_card()
@@ -239,11 +252,18 @@ class Game:
         # 顯示結果
         result_label = tk.Label(window, text=result_text)
         result_label.pack(side="top")
-
+        result_label = []
     def surrender(self):
+        # 轉換莊家第一張牌為正面
+        self.dealer_card_labels[0].configure(
+            image=self.dealer_1st_image)  # 使用dealer_1st_image
         # 玩家投降，直接判定為輸
         result_label = tk.Label(window, text="Player surrenders! Dealer wins!")
         result_label.pack(side="top")
+        self.hit_button.config(state="disabled")  # 禁用Hit按鈕
+        self.stand_button.config(state="disabled")  # 禁用Stand按鈕
+        self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+        self.restart_button.config(state="normal")  # 啟用restart按鈕
 
 
 deck = Deck()
