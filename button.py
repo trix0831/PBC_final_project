@@ -5,11 +5,12 @@ def button_pressed():
     print("button pressed")
 
 class button:
-    def __init__(self, width, height, pos, location1, location2, func = button_pressed()) -> None:
+    def __init__(self, width, height, pos, location1, location2, status, func = button_pressed()) -> None:
         self.width = width
         self.height = height
         self.pos = pos
         self.func = func
+        self.status = status
         
         self.button_image = []
     
