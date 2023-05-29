@@ -141,13 +141,13 @@ class Game:
         self.restart_button.config(state="disabled")  # 禁用restart按鈕
 
     def restart(self):
-        # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
+    # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
         self.deck = Deck()
         self.player_hand = []
         self.dealer_hand = []
         self.deck.shuffle()
 
-        # 清空牌區的內容
+    # 清空牌區的內容
         for label in self.player_card_labels:
             label.destroy()
         self.player_card_labels.clear()
@@ -155,6 +155,9 @@ class Game:
         for label in self.dealer_card_labels:
             label.destroy()
         self.dealer_card_labels.clear()
+
+        # 清空結果顯示區
+        self.clear_result_area()
 
         # 發牌
         self.player_hand.append(self.deck.deal_card())
@@ -180,9 +183,6 @@ class Game:
             label.pack(side="left")
             self.dealer_card_labels.append(label)
 
-        # 清空結果顯示區
-        self.clear_result_area()
-
         # 啟用按鈕
         self.hit_button.config(state="normal")
         self.stand_button.config(state="normal")
@@ -194,6 +194,7 @@ class Game:
         for child in window.winfo_children():
             if child.winfo_class() == "Label" and child.winfo_parent() == window:
                 child.destroy()
+
 
     def hit(self):
         if sum(card_values(self.player_hand)) < 21:
@@ -251,11 +252,7 @@ class Game:
         # 顯示結果
         result_label = tk.Label(window, text=result_text)
         result_label.pack(side="top")
-        self.hit_button.config(state="disabled")  # 禁用Hit按鈕
-        self.stand_button.config(state="disabled")  # 禁用Stand按鈕
-        self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
-        self.restart_button.config(state="normal")  # 啟用restart按鈕
-
+        result_label = []
     def surrender(self):
         # 轉換莊家第一張牌為正面
         self.dealer_card_labels[0].configure(
