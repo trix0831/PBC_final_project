@@ -247,19 +247,18 @@ class Game:
 
     def hit(self):
         global bet_amount  # 添加global语句
+        card = self.deck.deal_card()
+        self.player_hand.append(card)
+        # 新增抽到的牌到玩家牌區
+        label_image = ImageTk.PhotoImage(card.image)
+        label = tk.Label(self.player_frame, image=label_image)
+        label.image = label_image
+        label.pack(side="left")
+        self.player_card_labels.append(label)
         self.result_label = []
         if len(card_values(self.player_hand)) >= 5:
             result_text = "過五關! 你贏了!"
             self.chips += self.bet_amount*4
-        elif sum(card_values(self.player_hand)) < 21:
-            card = self.deck.deal_card()
-            self.player_hand.append(card)
-            # 新增抽到的牌到玩家牌區
-            label_image = ImageTk.PhotoImage(card.image)
-            label = tk.Label(self.player_frame, image=label_image)
-            label.image = label_image
-            label.pack(side="left")
-            self.player_card_labels.append(label)
         elif sum(card_values(self.player_hand)) > 21:
             # 轉換莊家第一張牌為正面
             self.dealer_card_labels[0].configure(
