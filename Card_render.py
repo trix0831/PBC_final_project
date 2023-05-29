@@ -11,6 +11,8 @@ def CardRender(detail, sequence_card, sequence_player, screen):
         screen.blit(card_image,(233 + sequence_card*90, 38))
     elif sequence_player == 0: 
         screen.blit(card_image,(233 + sequence_card*90, 398))
+        
+    pg.display.update()
     # elif sequence_player == 1: 
     #     card_image = pg.transform.rotozoom(card_image,90,1)
     #     screen.blit(card_image,(495 , 65 + sequence_card*60))
