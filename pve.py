@@ -6,6 +6,8 @@ import time
 chips = 1000
 reset = ''
 
+global screen
+
 class Player:
     def __init__(self, cards, cards_rank, points_sum, status, chips):
         self.cards = cards
@@ -17,9 +19,9 @@ class Player:
 rank_list = []
 for k in range(13):
     rank_list.append(["clubs", "diamonds", "hearts", "spades"])
-cards = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] * 4
-translate = {"J": 10, "Q": 10, "K": 10, "Ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
-translate_for_rank = {"J": 10, "Q": 11 , "K": 12, "Ace": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 7, "9": 8, "10": 9}
+cards = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"] * 4
+translate = {"jack": 10, "queen": 10, "king": 10, "ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
+translate_for_rank = {"jack": 10, "queen": 11 , "king": 12, "ace": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 7, "9": 8, "10": 9}
 # 發牌
 def deal_card():
     card = random.choice(cards)
@@ -30,7 +32,7 @@ def deal_card():
 
 # 算總和來決定ace要當成11還是1
 def calculate_points(cards):
-    translate = {"J": 10, "Q": 10, "K": 10, "Ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
+    translate = {"jack": 10, "queen": 10, "king": 10, "ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
     points_sum = 0
     for i in range(len(cards)):
         points_sum += translate[cards[i]]
@@ -41,7 +43,7 @@ def calculate_points(cards):
         return points_sum
 
     if points_sum > 21 and "Ace" in cards:
-        translate = {"J": 10, "Q": 10, "K": 10, "Ace": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
+        translate = {"jack": 10, "queen": 10, "king": 10, "ace": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
         points_sum = 0
         for i in range(len(cards)):
             points_sum += translate[cards[i]]
@@ -61,12 +63,19 @@ def game_start(detail):
         playing.cards_rank.append(deal_result[1])
         playing.points_sum = calculate_points(playing.cards)
         detail.append(playing)
+    
+        
 
     # # 如何對每個用戶端印出:您是玩家n or 改為印出'您' 而非 '玩家n' 之類的?
     # for i in range(1):
     #     print("您" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
     #     time.sleep(0.2)
     print(f"莊家的明牌：{detail[-1].cards[0]}")
+
+    for i_sp_1 in range(2):
+        for i_sc_1 in range(2):
+            CardRender(detail, i_sp_1, i_sc_1)
+
     return detail
 
 # 下注
@@ -146,8 +155,47 @@ def add_cards(i, detail):
         detail[i].status = 0
         return detail[i]
 
+# 把牌渲染上去
+def CardRender(detail, sequence_card, sequence_player):
+    
+    global screen
+    
+    card_image = pg.image.load("./image/"+detail[sequence_player].cards[sequence_card]+'_'+detail[sequence_player].cards_rank[sequence_card]+'_white.png')
+    card_image = pg.transform.scale(card_image,(60,84))
+    if detail[sequence_player] == detail[-1]:
+        screen.blit(card_image,(250, 200))
+    else: 
+        screen.blit(card_image,(250 + 50 * sequence_player, 100))
+
+
+
+
 # 主程式，遊戲開始
 def pve(chips = 1000):
+    global screen
+
+    # pygame初始化
+    pg.init()
+    scale = 1
+
+    # 設定視窗
+    width, height =  600, 420   
+    button_width, button_height = 200, 100  # 遊戲畫面寬和高
+    screen = pg.display.set_mode((width*scale, height*scale))  # 依設定顯示視窗
+    pg.display.set_caption("Welcome to the Black Jack game")  # 設定程式標題
+
+    # 建立畫布bg
+    bg = pg.Surface(screen.get_size())
+    bg = bg.convert()
+
+
+    image_surface = pg.image.load("./image/game_background.PNG").convert() ##
+    image_new = pg.transform.scale(image_surface,(width, height))
+    image_1 = pg.transform.rotozoom(image_new,0,scale)
+    screen.blit(image_1,(0,0))
+
+    buttons = []
+
     print("pve")
     detail = []
 
@@ -264,7 +312,42 @@ def pve(chips = 1000):
             return
         else:
             pve(chips)
-    
+
+        
+    print(buttons)
+
+    for button in buttons:
+        screen.blit(button.button_image[0], button.pos)
+
+    running = True
+
+    while running:
+        mouse_x, mouse_y = pg.mouse.get_pos()
+            
+        for button in buttons:
+            if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                screen.blit(button.button_image[0], button.pos)
+                
+            else:
+                screen.blit(button.button_image[0], button.pos)
+        
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                running = False
+                
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                for button in buttons:
+                    if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                        screen.blit(button.button_image[1], button.pos)
+                        button.func()
+                        
+        for button in buttons:
+            screen.blit(button.button_image[0], button.pos)
+                    
+        pg.display.update()
+                
+    pg.quit()
+        
 
 
 if __name__ == '__main__' and reset != 'gg':
