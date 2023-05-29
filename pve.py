@@ -66,6 +66,8 @@ def calculate_points(cards):
 
 # 發牌
 def game_start(detail):
+    global screen
+    
     # 發玩家、莊家的牌
     for i in range(2):
         playing = Player([], [], 0, 0, 0) 
@@ -88,7 +90,7 @@ def game_start(detail):
 
     for i_sp_1 in range(2):
         for i_sc_1 in range(2):
-            CardRender(detail, i_sp_1, i_sc_1)
+            CR.CardRender(detail, i_sp_1, i_sc_1, screen)
 
     return detail
 
@@ -169,17 +171,6 @@ def add_cards(i, detail):
         detail[i].status = 0
         return detail[i]
 
-# 把牌渲染上去
-def CardRender(detail, sequence_card, sequence_player):
-    
-    global screen
-    
-    card_image = pg.image.load("./image/"+detail[sequence_player].cards[sequence_card]+'_'+detail[sequence_player].cards_rank[sequence_card]+'_white.png')
-    card_image = pg.transform.scale(card_image,(60,84))
-    if detail[sequence_player] == detail[-1]:
-        screen.blit(card_image,(250, 200))
-    else: 
-        screen.blit(card_image,(250 + 50 * sequence_player, 100))
 
 def excute_loop_buttons():
     global buttons
