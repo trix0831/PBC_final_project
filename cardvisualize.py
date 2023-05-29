@@ -252,15 +252,7 @@ class Game:
         # 顯示結果
         result_label = tk.Label(window, text=result_text)
         result_label.pack(side="top")
-<<<<<<< HEAD
         result_label = []
-=======
-        self.hit_button.config(state="disabled")  # 禁用Hit按鈕
-        self.stand_button.config(state="disabled")  # 禁用Stand按鈕
-        self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
-        self.restart_button.config(state="normal")  # 啟用restart按鈕
-
->>>>>>> f745b5e41bdd3a7ed8714cdac40abb990ef9406d
     def surrender(self):
         # 轉換莊家第一張牌為正面
         self.dealer_card_labels[0].configure(
