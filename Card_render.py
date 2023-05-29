@@ -3,7 +3,6 @@ import pygame as pg
 card_squence = []
 
 def CardRender(detail, sequence_card, sequence_player, screen):
-    
     card_image = pg.image.load("./image/"+detail[sequence_player].cards[sequence_card]+'_'+detail[sequence_player].cards_rank[sequence_card]+'_white.png')
     card_image = pg.transform.scale(card_image,(90,126))
     
