@@ -13,8 +13,6 @@ font = pg.font.SysFont("Times new roman", 30)
 global screen
 global width
 global height
-global detail
-
 
 chips = 1000
 reset = ''
@@ -48,7 +46,7 @@ def deal_card():
 
 # 算總和來決定ace要當成11還是1
 def calculate_points(cards):
-    translate = {"jack": 10, "queen": 10, "king": 10, "ace": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
+    translate = {"jack": 10, "queen": 10, "king": 10, "ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
     points_sum = 0
     for i in range(len(cards)):
         points_sum += translate[cards[i]]
@@ -58,7 +56,7 @@ def calculate_points(cards):
     if len(cards) == 2:
         return points_sum
 
-    if points_sum > 21 and "Ace" in cards:
+    if points_sum > 21 and "ace" in cards:
         translate = {"jack": 10, "queen": 10, "king": 10, "ace": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
         points_sum = 0
         for i in range(len(cards)):
@@ -67,27 +65,28 @@ def calculate_points(cards):
     return points_sum
 
 # 發牌
-def game_start():
+def game_start(detail):
     global screen
-    detail = []
     
     # 發玩家、莊家的牌
     for i in range(2):
-        playing = Player([], [], 0, "0", 0) 
-        playing.status = "0"
-        
+        playing = Player([], [], 0, 0, 0) 
         deal_result = deal_card()
-        
         playing.cards.append(deal_result[0])
         playing.cards_rank.append(deal_result[1])
-        
         deal_result = deal_card()
-        
         playing.cards.append(deal_result[0])
         playing.cards_rank.append(deal_result[1])
         playing.points_sum = calculate_points(playing.cards)
-        
         detail.append(playing)
+    
+        
+
+    # # 如何對每個用戶端印出:您是玩家n or 改為印出'您' 而非 '玩家n' 之類的?
+    # for i in range(1):
+    #     print("您" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
+    #     time.sleep(0.2)
+    # print(f"莊家的明牌：{detail[-1].cards[0]}")
 
     return detail
 
@@ -111,6 +110,19 @@ def Bet(detail, chips):
             except:
                 print("投注失敗,請重新下注")
 
+# 投降
+def Surrender():
+    global detail
+    print("您已投降,返回其一半籌碼")
+    detail[0].status = "已投降"
+    
+    renderText("surrender", (300, 300))
+    time.sleep(1)
+    
+    end()
+    
+    # return detail[0]
+
 def table():
     global detail
     
@@ -122,68 +134,59 @@ def table():
         for i_sc_1 in range(len(detail[i_sp_1].cards)):            
             CR.CardRender(detail, i_sc_1, i_sp_1, screen)
             
-    pg.display.update()
-    
-
-# 投降
-def Surrender():
-    global detail
-    global buttons
-    
-    table()
-    renderText("Surrender already, gg", (250, 250))
-    pg.display.update()
-    detail[0].points_sum = calculate_points(detail[0].cards)
-    
-    detail[0].status = "已投降"
-    
-    buttons = []
-    
-    return detail[0]
-
+    # pg.display.update()
 
 # 每個玩家加完牌後才換下一個
-def add_cards(jjingg):
+def add_cards(i):
     global detail
-    global screen
     
     # 第n個玩家, 第一張牌, 第二張牌
-    if len(detail[jjingg].cards) == 5:
-        # 過五關
-        if detail[jjingg].points_sum <= 21:
-            detail[jjingg].status = "過五關"
+    add_card = ""
+    while add_card != "n":
+        for i in range(1):
+            if len(detail[i].cards) == 5:
+                # 過五關
+                if detail[i].points_sum <= 21:
+                    add_card = "n"
+                    detail[i].status = "過五關"
+                    
+                    table()
+                    renderText("5 stage", (300, 300))
+                    time.sleep(1)
+                    
+                    end()
+                    # return detail[i]
+                else:
+                    add_card = "n"
+                    renderText("U have " + str(detail[i].cards) + "points.", (300, 250))
+                    
+
+            else:
+                deal_result = deal_card()
+                detail[i].cards.append(deal_result[i])
+                detail[i].cards_rank.append(deal_result[-1])
+                detail[i].points_sum = calculate_points(detail[i].cards)
+                if detail[i].points_sum > 21:
+                    add_card = "n"
+                    print("您" + str(i + 1) + "的牌：", detail[i].cards, "，共" + str(detail[i].points_sum) + "點", sep = '')
+                else:
+                    print("您" + str(i + 1) + "的牌：", detail[i].cards, "，共" + str(detail[i].points_sum) + "點", sep = '')
+
+    for i in range(1):
+        if detail[i].points_sum > 21:
+            detail[i].status = "爆"
             
-            renderText("過五關", (300, 300))
+            table()
+            renderText("boom", (300, 300))
+            
             time.sleep(1)
-            
+                    
             end()
-            # return detail
-        
+            # return detail[i]
         else:
-            renderText("U have " + str(detail[jjingg].cards) + "points.", (300, 250))
-            
-    else:
-        deal_result = deal_card()
-        print('shit')
-        
-        detail[jjingg].cards.append(deal_result[0])
-        detail[jjingg].cards_rank.append(deal_result[1])   
-        
-        CR.CardRender(detail, len(detail[jjingg].cards) - 1, 0, screen)
-        print(detail[jjingg].cards)
-        
-        # detail[jjingg].points_sum = calculate_points(detail[jjingg].cards)
-        
-        if calculate_points(detail[jjingg].cards) > 21:
-            detail[jjingg].status = "爆"
-            
-            renderText("boooooooom", (300, 300))
-            time.sleep(1)
-            
-            end()
-            return detail
-        else:
-            pass
+            detail[i].status = 0
+            table()
+            return detail[i]
 
 
 def execute_loop_buttons():
@@ -192,6 +195,9 @@ def execute_loop_buttons():
     excute_index = -1
     
     running = True
+    
+    table()
+    pg.display.update()
     
     while running:
         mouse_x, mouse_y = pg.mouse.get_pos()
@@ -208,7 +214,7 @@ def execute_loop_buttons():
                     else:
                         screen.blit(button.button_image[0], button.pos)
                     
-                if event.type == pg.MOUSEBUTTONUP:
+                if event.type == pg.MOUSEBUTTONDOWN:
                     for button_index in range(len(buttons)):
                         if buttons[button_index].pos[0] < mouse_x < buttons[button_index].pos[0] + buttons[button_index].width and buttons[button_index].pos[1] < mouse_y < buttons[button_index].pos[1] + buttons[button_index].height:
                             excute_index = button_index
@@ -281,72 +287,60 @@ def mega_add():
     global buttons
     
     for i in range(1):
-        detail[i] = add_cards(i)
-        
-        running = True
+        add_cards(i)
+        if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
+            pass
+        else:
+            running = True
+    
+            while running:
+                mouse_x, mouse_y = pg.mouse.get_pos()
 
-        while running:
-            mouse_x, mouse_y = pg.mouse.get_pos()
-
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-                
-                try:
-                    for button in buttons:
-                        if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
-                            screen.blit(button.button_image[1], button.pos)
-                        else:
-                            screen.blit(button.button_image[0], button.pos)
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        pg.quit()
+                        sys.exit()
                     
-                    if event.type == pg.MOUSEBUTTONDOWN:
-                        if buttons[0].pos[0] < mouse_x < buttons[0].pos[0] + buttons[0].width and buttons[0].pos[1] < mouse_y < buttons[0].pos[1] + buttons[0].height:
-                            detail = add_cards(i)
+                    try:
+                        for button in buttons:
+                            if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                                screen.blit(button.button_image[1], button.pos)
+                            else:
+                                screen.blit(button.button_image[0], button.pos)
                             
-                        if buttons[1].pos[0] < mouse_x < buttons[1].pos[0] + buttons[1].width and buttons[1].pos[1] < mouse_y < buttons[1].pos[1] + buttons[1].height:
-                            running = False
+                        pg.display.update()
+                            
+                        if event.type == pg.MOUSEBUTTONDOWN:
+                            if buttons[0].pos[0] < mouse_x < buttons[0].pos[0] + buttons[0].width and buttons[0].pos[1] < mouse_y < buttons[0].pos[1] + buttons[0].height:
+                                detail[i] = add_cards(i)
+                            if buttons[1].pos[0] < mouse_x < buttons[1].pos[0] + buttons[1].width and buttons[1].pos[1] < mouse_y < buttons[1].pos[1] + buttons[1].height:                                
+                                running = False
+                                    
+                    except:
+                        pass
                                 
-                except:
-                    pass
-                            
-                pg.display.update()
-                
-            # print(detail[i].status)
-            
-            # if detail[i].status == "爆" or detail[i].status == "過五關":
-            #     running = False
+                    pg.display.update()
             
     
 def mega_not_add():
     global detail
-    global buttons
-    
-    table()
-    for i_sp_1 in range(2):
-        for i_sc_1 in range(2):
-            CR.CardRender(detail, i_sp_1, i_sc_1, screen)
-    pg.display.update()
     detail[0].points_sum = calculate_points(detail[0].cards)
     
-    buttons = []
-    
+    table()
+    renderText("stand", (300, 300))
+    time.sleep(1)
     
 def end():
-    global detail
-    
     running = True
-    print(detail[0].cards, detail[1].cards)
-    
-    table()
 
-    while running:
+    table()
+    pg.display.update()
+    
+    while running:        
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                running = False
-                
-    pg.quit()
-    sys.exit()
+                pg.quit()
+                sys.exit()
 
 # 主程式，遊戲開始
 def pve(chips = 1000):
@@ -385,10 +379,7 @@ def pve(chips = 1000):
     screen.fill((13,96, 0))
     pg.display.update()
 
-    detail = game_start()
-    
-    for person in detail:
-        person.status = "0"
+    detail = game_start(detail)
     
     t = execute_loop_input("Please enter username (only English and numbers):")
     print(t)
@@ -424,7 +415,6 @@ def pve(chips = 1000):
 
     screen.fill((13,96, 0))
     pg.display.update()
-    
     renderText("Your chips left:" + str(chips), (500, 40))
     print("您目前的籌碼剩餘:" + str(chips))
 
@@ -456,7 +446,7 @@ def pve(chips = 1000):
     time.sleep(0.5)
 
 
-    table()
+    screen.fill((13,96, 0))
 
     button_width, button_height = 200, 100
     Hit_button = BT.button(button_width, button_height, (180, 533), ".\image\hit_up.png", ".\image\hit_down.png", True, mega_add)
@@ -490,11 +480,14 @@ def pve(chips = 1000):
         detail[-1].status = "BLACK JACK"
         renderText("Dealer got a BJ!!!", (300, 150))
         print("莊家的牌：", detail[-1].cards, detail[-1].cards_rank, ",BLACK JACK")
+        
     else:
         while detail[-1].points_sum < 17:
             deal_result = deal_card()
             detail[-1].cards.append(deal_result[0])
             detail[-1].cards_rank.append(deal_result[1])
+            table()
+            pg.display.update()
             detail[-1].points_sum = calculate_points(detail[-1].cards)
         renderText("Dealer got " + str(detail[-1].cards) + "points.", (300, 150))
         print("莊家的牌：", detail[-1].cards, detail[-1].cards_rank, ",共" + str(detail[-1].points_sum) + "點", sep = '')
@@ -552,6 +545,11 @@ def pve(chips = 1000):
     #         return
     #     else:
     #         pve(chips)
+
+
+                
+    # pg.quit()
+    # sys.exit()
     end()
 
 

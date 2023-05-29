@@ -66,4 +66,4 @@ while running:
             
 pg.quit()   
 
-buttons[excute_index].func()
+buttons[excute_index].func(1000)
