@@ -84,11 +84,7 @@ def game_start(detail):
     # for i in range(1):
     #     print("您" + str(i + 1) + "的明牌：" , detail[i].cards[0], sep = '')
     #     time.sleep(0.2)
-    print(f"莊家的明牌：{detail[-1].cards[0]}")
-
-    for i_sp_1 in range(2):
-        for i_sc_1 in range(2):
-            CardRender(detail, i_sp_1, i_sc_1)
+    # print(f"莊家的明牌：{detail[-1].cards[0]}")
 
     return detail
 
@@ -141,7 +137,8 @@ def add_cards(i, detail):
                 return detail[i]
             else:
                 add_card = "n"
-                print("您" + str(i + 1) + "的牌：", detail[i].cards, "，共" + str(detail[i].points_sum) + "點", sep = '')
+                renderText("U have " + str(detail[i].cards) + "points.", (300, 2501))
+                
 
         else:
             add_card = input("輸入y加牌、輸入n停牌:")
@@ -171,15 +168,16 @@ def add_cards(i, detail):
 
 # 把牌渲染上去
 def CardRender(detail, sequence_card, sequence_player):
-    
     global screen
     
     card_image = pg.image.load("./image/"+detail[sequence_player].cards[sequence_card]+'_'+detail[sequence_player].cards_rank[sequence_card]+'_white.png')
-    card_image = pg.transform.scale(card_image,(60,84))
+    card_image = pg.transform.scale(card_image,(90,126))
+    
     if detail[sequence_player] == detail[-1]:
-        screen.blit(card_image,(250, 200))
-    else: 
-        screen.blit(card_image,(250 + 50 * sequence_player, 100))
+        screen.blit(card_image,(233 + sequence_card*90, 38))
+    elif sequence_player == 0: 
+        screen.blit(card_image,(233 + sequence_card*90, 398))
+    pg.display.update()
 
 def excute_loop_buttons():
     global buttons
@@ -216,10 +214,10 @@ def excute_loop_buttons():
             
     return excute_index
 
-def excute_loop_input():
+def excute_loop_input(aaa):
     # 設定字體和文字
     font = pg.font.SysFont("Times new roman", 30)
-    text = font.render("Please enter username (only English and numbers):", True, (255, 255, 255))
+    text = font.render(aaa, True, (255, 255, 255))
 
     # 設定輸入框
     input_box = pg.Rect(250, 300, 300, 50)
@@ -248,7 +246,7 @@ def excute_loop_input():
         # 畫出文字和輸入框
         pg.draw.rect(screen, (255, 255, 255), input_box)
         text_width, text_height = font.size("Please enter username (only English and numbers):")
-        screen.blit(text, ((width - text_width) // 2, input_box.y - text_height - 20))
+        screen.blit(text, ((width - text_width) // 2 + 100, input_box.y - text_height - 20))
         pg.draw.rect(screen, (255, 255, 255), input_box, 2)
 
         # 畫出輸入的文字
@@ -304,45 +302,95 @@ def pve(chips = 1000):
     
     print("正在發牌,請稍後")
     renderText("WAIT!!! IDIOT", (100,50))
-    time.sleep(1)
-    
+    time.sleep(0.5)
+
+    screen.fill((13,96, 0))
+    pg.display.update()
 
     detail = game_start(detail)
     
-    t = excute_loop_input()
+    t = excute_loop_input("Please enter username (only English and numbers):")
     print(t)
     
     screen.blit(image_1,(0,0))
-    excute_func = excute_loop_buttons()
+    # excute_func = excute_loop_buttons()
     
-    if excute_func != -1:
-        buttons[excute_func].func()
+    # if excute_func != -1:
+    #     buttons[excute_func].func()
     
-    chips = Bet(detail, chips)
     
 
+
+    # chips = Bet(detail, chips)
+    # screen.blit(image_1,(0,0))
+    screen.fill((13,96, 0))
+    pg.display.update()
+
+    time.sleep(0.5)
+
+    conti = True
+    while conti:
+        try:
+            bet_num = int(excute_loop_input("Please enter ur bet:"))
+            if bet_num > chips:
+                renderText("Wrong!!!", (300, 300))
+            else:
+                chips -= bet_num
+                conti = False
+        except:
+            renderText("Wrong!!!", (150, 50))
+
+
+    screen.fill((13,96, 0))
+    pg.display.update()
+    renderText("Your chips left:" + str(chips), (500, 40))
     print("您目前的籌碼剩餘:" + str(chips))
 
-    for g in range(1):
-        print(detail[g].cards, detail[g].points_sum, detail[g].status)
     print("進入投降階段")
+    renderText("Surrender Phase Let's Go", (500, 10))
+
+    for i_sp_1 in range(2):
+        for i_sc_1 in range(2):
+            CardRender(detail, i_sp_1, i_sc_1)
 
     # 逐一詢問玩家是否投降
     for k in range(1):
         print("您的回合")
+        renderText("Your turn!!!", (50, 200))
 
         # bj 不用投降
         if  translate[str(detail[k].cards[0])] in [10, 11] and translate[str(detail[k].cards[1])] in [10, 11] and\
             translate[str(detail[k].cards[0])] != translate[str(detail[k].cards[1])]:
             detail[k].status = "BLACK JACK"
             print("您獲得BLACK JACK,請等待結果")
+            renderText("U got a BJ!!!", (350, 200))
 
         else:
             print("您的牌為:" + str(detail[k].cards[0]) + "和" + str(detail[k].cards[1]))
-            detail[k] = Surrender(k, detail)
+            # detail[k] = Surrender(k, detail)
 
     print("投降階段結束,接下來進入加牌階段")
-    time.sleep(1)
+    renderText("End of surrounding phase, now adding phase!!!", (350, 200))
+    time.sleep(0.5)
+
+
+    screen.fill((13,96, 0))
+
+    button_width, button_height = 200, 100
+    Hit_button = BT.button(button_width, button_height, (180, 533), ".\image\hit_up.png", ".\image\hit_down.png", True, )
+    buttons.append(Hit_button)
+
+    Stand_button = BT.button(button_width, button_height, (180, 668), ".\image\stand_up.png", ".\image\stand_down.png", True, )
+    buttons.append(Stand_button)
+
+    Surrender_button = BT.button(button_width, button_height, (180, 803), ".\image\surrender_up.png", ".\image\surrender_down.png", True, )
+    buttons.append(Surrender_button)
+    for button in buttons:
+        screen.blit(button.button_image[0], button.pos)
+    for i_sp_1 in range(2):
+        for i_sc_1 in range(2):
+            CardRender(detail, i_sp_1, i_sc_1)
+    pg.display.update()
 
     for i in range(1):
         if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
@@ -351,9 +399,17 @@ def pve(chips = 1000):
             print("您" + str(i + 1) + "的回合")
             # 希望只出現在該玩家的畫面
             print("您的牌為:" + str(detail[i].cards[0]) + "和" + str(detail[i].cards[1]))
-            detail[i] = add_cards(i, detail)
+            # detail[i] = add_cards(i, detail)
+    
+    excute_func = excute_loop_buttons()
+    
+    if excute_func != -1:
+        buttons[excute_func].func()
+
+    print("您" + str(i + 1) + "的牌：", detail[i].cards, "，共" + str(detail[i].points_sum) + "點", sep = '')
 
     print("加牌階段結束,接下來進入莊家的回合")
+    renderText("End of adding's phase, dealer's turn.", (350, 200))
 
     time.sleep(1)
 
@@ -361,6 +417,7 @@ def pve(chips = 1000):
     if  translate[str(detail[-1].cards[0])] in [10, 11] and translate[str(detail[-1].cards[1])] in [10, 11] and\
         translate[str(detail[-1].cards[0])] != translate[str(detail[-1].cards[1])]:
         detail[-1].status = "BLACK JACK"
+        renderText("Dealer got a BJ!!!", (300, 150))
         print("莊家的牌：", detail[-1].cards, detail[-1].cards_rank, ",BLACK JACK")
     else:
         while detail[-1].points_sum < 17:
@@ -368,6 +425,7 @@ def pve(chips = 1000):
             detail[-1].cards.append(deal_result[0])
             detail[-1].cards_rank.append(deal_result[1])
             detail[-1].points_sum = calculate_points(detail[-1].cards)
+        renderText("Dealer got " + str(detail[-1].cards) + "points.", (300, 150))
         print("莊家的牌：", detail[-1].cards, detail[-1].cards_rank, ",共" + str(detail[-1].points_sum) + "點", sep = '')
 
     # for g in range(1):
