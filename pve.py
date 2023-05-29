@@ -10,11 +10,14 @@ pg.init()
 
 font = pg.font.SysFont("Times new roman", 30)
 
+global screen
+global width
+global height
 
 chips = 1000
 reset = ''
+width, height =  600, 420
 
-global screen
 
 class Player:
     def __init__(self, cards, cards_rank, points_sum, status, chips):
@@ -178,7 +181,7 @@ def CardRender(detail, sequence_card, sequence_player):
     else: 
         screen.blit(card_image,(250 + 50 * sequence_player, 100))
 
-def excute_loop():
+def excute_loop_buttons():
     global buttons
     
     excute_index = -1
@@ -213,6 +216,54 @@ def excute_loop():
             
     return excute_index
 
+def excute_loop_input():
+    # 設定字體和文字
+    font = pg.font.SysFont("Times new roman", 30)
+    text = font.render("Please enter username (only English and numbers):", True, (255, 255, 255))
+
+    # 設定輸入框
+    input_box = pg.Rect(250, 300, 300, 50)
+    input_text = ""
+    max_length = 10
+
+    running = True
+
+
+    while running:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+                
+            elif event.type == pg.KEYDOWN:
+                if event.unicode.isprintable() and len(input_text) < max_length:
+                    input_text += event.unicode
+                
+                elif event.key == pg.K_BACKSPACE:
+                    input_text = input_text[:-1]
+                
+                elif event.key == pg.K_RETURN:
+                    running = False
+
+        # 畫出文字和輸入框
+        pg.draw.rect(screen, (255, 255, 255), input_box)
+        text_width, text_height = font.size("Please enter username (only English and numbers):")
+        screen.blit(text, ((width - text_width) // 2, input_box.y - text_height - 20))
+        pg.draw.rect(screen, (255, 255, 255), input_box, 2)
+
+        # 畫出輸入的文字
+        text_surface = font.render(input_text, True, (0, 0, 0))
+        screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
+
+        # 檢查是否超過字數限制
+        if len(input_text) >= max_length:
+            text_surface = font.render("Max length reached", True, (255, 0, 0))
+            screen.blit(text_surface, (290  , input_box.y + 70))
+
+        pg.display.update()
+        
+    return input_text
+
 def renderText(str, pos):
     global screen
     
@@ -226,6 +277,8 @@ def renderText(str, pos):
 def pve(chips = 1000):
     global screen
     global buttons
+    global width
+    global height
     
     buttons = []
     excute_func = -1
@@ -234,8 +287,7 @@ def pve(chips = 1000):
     pg.init()
     scale = 1.5
 
-    # 設定視窗
-    width, height =  600, 420   
+    # 設定視窗   
     screen = pg.display.set_mode((width*scale, height*scale))  # 依設定顯示視窗
     pg.display.set_caption("Welcome to the Black Jack game")  # 設定程式標題
 
@@ -256,7 +308,12 @@ def pve(chips = 1000):
     
 
     detail = game_start(detail)
-    excute_func = excute_loop()
+    
+    t = excute_loop_input()
+    print(t)
+    
+    screen.blit(image_1,(0,0))
+    excute_func = excute_loop_buttons()
     
     if excute_func != -1:
         buttons[excute_func].func()
