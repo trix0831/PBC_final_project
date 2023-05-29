@@ -3,6 +3,14 @@ import pygame as pg
 import button as BT
 import random
 import time
+import sys
+import Card_render as CR
+
+pg.init()
+
+font = pg.font.SysFont("Times new roman", 30)
+
+
 chips = 1000
 reset = ''
 
@@ -17,11 +25,14 @@ class Player:
         self.chips = chips
 
 rank_list = []
+
 for k in range(13):
     rank_list.append(["clubs", "diamonds", "hearts", "spades"])
+
 cards = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"] * 4
 translate = {"jack": 10, "queen": 10, "king": 10, "ace": 11, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10}
 translate_for_rank = {"jack": 10, "queen": 11 , "king": 12, "ace": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 7, "9": 8, "10": 9}
+
 # 發牌
 def deal_card():
     card = random.choice(cards)
@@ -167,26 +178,66 @@ def CardRender(detail, sequence_card, sequence_player):
     else: 
         screen.blit(card_image,(250 + 50 * sequence_player, 100))
 
+def excute_loop():
+    global buttons
+    
+    excute_index = -1
+    
+    running = True
+    
+    while running:
+        mouse_x, mouse_y = pg.mouse.get_pos()
 
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            
+            try:
+                for button in buttons:
+                    if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                        screen.blit(button.button_image[1], button.pos)
+                    else:
+                        screen.blit(button.button_image[0], button.pos)
+                    
+                if event.type == pg.MOUSEBUTTONUP:
+                    for button_index in range(len(buttons)):
+                        if buttons[button_index].pos[0] < mouse_x < buttons[button_index].pos[0] + buttons[button_index].width and buttons[button_index].pos[1] < mouse_y < buttons[button_index].pos[1] + buttons[button_index].height:
+                            excute_index = button_index
+                            running = False
+                            
+            except:
+                pass
+                        
+            pg.display.update()
+            
+    return excute_index
+
+def renderText(str, pos):
+    global screen
+    
+    text = font.render(str, True, (255, 255, 255))
+    screen.blit(text, pos)
+    pg.display.update()
+    
 
 
 # 主程式，遊戲開始
 def pve(chips = 1000):
     global screen
+    global buttons
+    
+    buttons = []
+    excute_func = -1
 
     # pygame初始化
     pg.init()
-    scale = 1
+    scale = 1.5
 
     # 設定視窗
     width, height =  600, 420   
-    button_width, button_height = 200, 100  # 遊戲畫面寬和高
     screen = pg.display.set_mode((width*scale, height*scale))  # 依設定顯示視窗
     pg.display.set_caption("Welcome to the Black Jack game")  # 設定程式標題
-
-    # 建立畫布bg
-    bg = pg.Surface(screen.get_size())
-    bg = bg.convert()
 
 
     image_surface = pg.image.load("./image/game_background.PNG").convert() ##
@@ -194,24 +245,30 @@ def pve(chips = 1000):
     image_1 = pg.transform.rotozoom(image_new,0,scale)
     screen.blit(image_1,(0,0))
 
-    buttons = []
-
     print("pve")
     detail = []
 
+
+    
     print("正在發牌,請稍後")
+    renderText("WAIT!!! IDIOT", (100,50))
     time.sleep(1)
+    
 
     detail = game_start(detail)
-
+    excute_func = excute_loop()
+    
+    if excute_func != -1:
+        buttons[excute_func].func()
+    
     chips = Bet(detail, chips)
+    
 
     print("您目前的籌碼剩餘:" + str(chips))
 
     for g in range(1):
         print(detail[g].cards, detail[g].points_sum, detail[g].status)
     print("進入投降階段")
-
 
     # 逐一詢問玩家是否投降
     for k in range(1):
@@ -229,9 +286,6 @@ def pve(chips = 1000):
 
     print("投降階段結束,接下來進入加牌階段")
     time.sleep(1)
-
-    # for g in range(player):
-    #     print(detail[g].cards, detail[g].points_sum, detail[g].status)
 
     for i in range(1):
         if detail[i].status == "BLACK JACK" or detail[i].status == "已投降":
@@ -323,23 +377,30 @@ def pve(chips = 1000):
 
     while running:
         mouse_x, mouse_y = pg.mouse.get_pos()
-            
-        for button in buttons:
-            if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
-                screen.blit(button.button_image[0], button.pos)
-                
-            else:
-                screen.blit(button.button_image[0], button.pos)
+        
+        try:
+            for button in buttons:
+                if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                    screen.blit(button.button_image[0], button.pos)
+                    
+                else:
+                    screen.blit(button.button_image[0], button.pos)
+        except:
+            pass
+        
         
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
                 
             elif event.type == pg.MOUSEBUTTONDOWN:
-                for button in buttons:
-                    if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
-                        screen.blit(button.button_image[1], button.pos)
-                        button.func()
+                try:
+                    for button in buttons:
+                        if button.pos[0] < mouse_x < button.pos[0] + button.width and button.pos[1] < mouse_y < button.pos[1] + button.height:
+                            screen.blit(button.button_image[1], button.pos)
+                            button.func()
+                except:
+                    pass
                         
         for button in buttons:
             screen.blit(button.button_image[0], button.pos)
