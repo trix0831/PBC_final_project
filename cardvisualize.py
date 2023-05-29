@@ -138,6 +138,7 @@ class Game:
         self.restart_button = tk.Button(
             button_frame, text="Restart", command=self.restart)
         self.restart_button.pack(side="left")
+        self.restart_button.config(state="disabled")  # 禁用restart按鈕
 
     def restart(self):
         # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
@@ -186,6 +187,7 @@ class Game:
         self.hit_button.config(state="normal")
         self.stand_button.config(state="normal")
         self.surrender_button.config(state="normal")
+        self.restart_button.config(state="disabled")  # 禁用restart按鈕
 
     def clear_result_area(self):
         # 清空結果顯示區
@@ -215,6 +217,7 @@ class Game:
             self.hit_button.config(state="disabled")  # 禁用Hit按鈕
             self.stand_button.config(state="disabled")  # 禁用Stand按鈕
             self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+            self.restart_button.config(state="normal")  # 啟用restart按鈕
 
     def stand(self):
         # 轉換莊家第一張牌為正面
@@ -251,6 +254,7 @@ class Game:
         self.hit_button.config(state="disabled")  # 禁用Hit按鈕
         self.stand_button.config(state="disabled")  # 禁用Stand按鈕
         self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+        self.restart_button.config(state="normal")  # 啟用restart按鈕
 
     def surrender(self):
         # 轉換莊家第一張牌為正面
@@ -262,6 +266,7 @@ class Game:
         self.hit_button.config(state="disabled")  # 禁用Hit按鈕
         self.stand_button.config(state="disabled")  # 禁用Stand按鈕
         self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+        self.restart_button.config(state="normal")  # 啟用restart按鈕
 
 
 deck = Deck()
