@@ -176,6 +176,8 @@ class Game:
     def place_bet(self):
         bet_amount = int(self.bet_entry.get())
         if bet_amount > self.chips:
+            warn_label = tk.Label(window, text="籌碼不足")
+            warn_label.pack(side="top")
             messagebox.showerror("Invalid Bet", "Insufficient chips!")
         else:
             self.bet_amount = bet_amount
