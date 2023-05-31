@@ -1,9 +1,8 @@
 import random
 import tkinter as tk
 from tkinter import *
-from PIL import Image, ImageDraw, ImageTk
-import os
-
+from tkinter import messagebox
+from PIL import Image, ImageTk
 
 # 定義圖片大小
 card_width, card_height = 150, 225
@@ -74,6 +73,8 @@ def card_values(hand):
             values.remove(11)
             values.append(1)
     return values
+
+
 # 遊戲介面
 
 
@@ -127,7 +128,7 @@ class Game:
         self.bet_button.config(state="normal")
 
         # 顯示籌碼數量
-        self.chips = 1000
+        self.chips = 10000
         self.chips_label = tk.Label(window, text=f"籌碼: {self.chips}")
         self.chips_label.pack(side="top")
 
@@ -178,25 +179,28 @@ class Game:
             self.dealer_card_labels.append(label)
 
     def place_bet(self):
-        bet_amount = int(self.bet_entry.get())
-        self.result_label = []
-        if bet_amount > self.chips:
-            warn_label = tk.Label(window, text="籌碼不足")
-            self.result_label.append(warn_label)
-            messagebox.showerror("Invalid Bet", "Insufficient chips!")
-        else:
-            self.bet_amount = bet_amount
-            self.chips -= self.bet_amount
-            self.chips_label.config(text=f"籌碼: {self.chips}")
+        while True:
+            bet_amount = int(self.bet_entry.get())
+            self.result_label = []
+            if bet_amount > self.chips:
+                messagebox.showerror("輸入錯誤", "籌碼不足!")
+            else:
+                self.bet_amount = bet_amount
+                self.chips -= self.bet_amount
+                self.chips_label.config(text=f"籌碼: {self.chips}")
 
-            # 啟用按鈕
-            self.hit_button.config(state="normal")
-            self.stand_button.config(state="normal")
-            self.surrender_button.config(state="normal")
-            self.bet_button.config(state="disabled")
+                # 啟用按鈕
+                self.hit_button.config(state="normal")
+                self.stand_button.config(state="normal")
+                self.surrender_button.config(state="normal")
+                self.bet_button.config(state="disabled")
+                break  # 跳出迴圈
+            self.bet_entry.delete(0, END)  # 清空輸入框
+            self.bet_entry.focus()  # 讓輸入框獲得焦點，等待使用者輸入
 
     def restart(self):
         if self.chips == 0:
+            tk.messagebox.showinfo(title="你破產了༼☯﹏☯༽", message="若想繼續遊戲，請重新啟動程式")
             window.destroy()
         # 重新啟動遊戲，重新生成一副牌並重置遊戲狀態
         self.deck = Deck()
@@ -236,14 +240,8 @@ class Game:
         self.hit_button.config(state="disabled")  # 禁用Hit按鈕
         self.stand_button.config(state="disabled")  # 禁用Stand按鈕
         self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
-        self.restart_button.config(state="disabled")
-        self.bet_button.config(state="normal")
-
-    def clear_result_area(self):
-        # 清空結果顯示區
-        for child in self.window.winfo_children():
-            if child.winfo_class() == "Label" and child.winfo_parent() == self.window:
-                child.destroy()
+        self.restart_button.config(state="disabled")  # 禁用Restart 按鈕
+        self.bet_button.config(state="normal")  # 啟用Bet 按鈕
 
     def hit(self):
         global bet_amount  # 添加global语句
@@ -256,9 +254,23 @@ class Game:
         label.pack(side="left")
         self.player_card_labels.append(label)
         self.result_label = []
-        if len(card_values(self.player_hand)) >= 5:
+        if len(card_values(self.player_hand)) == 3:
+            self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+        if len(card_values(self.player_hand)) >= 5 and sum(card_values(self.player_hand)) < 21:
             result_text = "過五關! 你贏了!"
             self.chips += self.bet_amount*4
+            # 顯示更新後的籌碼數量
+            self.chips_label.config(text=f"籌碼: {self.chips}")
+            # 顯示結果
+            result_label = tk.Label(window, text=result_text)
+            result_label.place(x=250, y=270)
+            self.result_label.append(result_label)
+            # 啟用按鈕
+            self.hit_button.config(state="disabled")  # 禁用Hit按鈕
+            self.stand_button.config(state="disabled")  # 禁用Stand按鈕
+            self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
+            self.restart_button.config(state="normal")
+            self.bet_button.config(state="disabled")  # 禁用bet按鈕
         elif sum(card_values(self.player_hand)) > 21:
             # 轉換莊家第一張牌為正面
             self.dealer_card_labels[0].configure(
@@ -275,7 +287,7 @@ class Game:
             self.stand_button.config(state="disabled")  # 禁用Stand按鈕
             self.surrender_button.config(state="disabled")  # 禁用Surrender按鈕
             self.restart_button.config(state="normal")
-            self.bet_button.config(state="disabled")
+            self.bet_button.config(state="disabled")  # 禁用bet按鈕
         elif sum(card_values(self.player_hand)) == 21:
             # 轉換莊家第一張牌為正面
             self.dealer_card_labels[0].configure(
@@ -289,12 +301,12 @@ class Game:
                 label.image = label_image
                 label.pack(side="left")
                 self.dealer_card_labels.append(label)
-            if sum(card_values(self.player_hand)) == 21:
+            if sum(card_values(self.dealer_hand)) == 21:
                 result_text = "和局"
                 self.chips += self.bet_amount
             else:
-                result_text = "你贏了!"
-                self.chips += self.bet_amount*2
+                result_text = "Black jack 你贏了!"
+                self.chips += self.bet_amount*3
             # 顯示結果
             result_label = tk.Label(window, text=result_text)
             result_label.place(x=250, y=270)
@@ -329,6 +341,9 @@ class Game:
         if len(card_values(self.player_hand)) >= 5 and player_score < 21:
             result_text = "過五關! 你贏了!"
             self.chips += self.bet_amount*4
+        elif player_score == 21:
+            result_text = "Black jack 你贏了!"
+            self.chips += self.bet_amount*3
         elif player_score > 21:
             result_text = "玩家爆牌 莊家獲勝"
             self.chips = self.chips
